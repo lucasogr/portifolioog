@@ -1,0 +1,42 @@
+name: Deploy para GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # Adicione este passo SE seu site precisar ser construído
+      # - name: Build do site
+      #   run: |
+      #     npm install
+      #     npm run build
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true  # Isso habilita o Pages se não estiver ativado
+
+      - name: Criar artefato para deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./  # Ou './dist' se você construiu o site em outra pasta
+
+      - name: Publicar no GitHub Pages
+        uses: actions/deploy-pages@v4
+        id: deployment
